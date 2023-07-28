@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_map"
+        android:icon="@drawable/ic_map"
+        android:title="@string/title_map" />
+
+    <item
+        android:id="@+id/navigation_reports"
+        android:icon="@drawable/ic_list"
+        android:title="@string/title_reports" />
+
+    <item
+        android:id="@+id/navigation_flood"
+        android:icon="@drawable/ic_flood"
+        android:title="@string/title_flood" />
+
+    <item
+        android:id="@+id/navigation_Setting"
+        android:icon="@drawable/ic_setting"
+        android:title="@string/title_setting" />
+
+
+</menu>
