@@ -2,29 +2,73 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_bencana"
     android:layout_width="match_parent"
     android:layout_height="170dp"
-    android:id="@+id/item_bencana"
     android:paddingTop="8dp"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-    android:id="@+id/imgReport"
-    android:layout_width="84dp"
-    android:layout_height="84dp"
-    android:layout_marginStart="16dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    <!-- CardView to cover the entire layout -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true">
 
-    <TextView
-        android:id="@+id/text_report_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
-        android:fontFamily="sans-serif"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        tools:text="TextView" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
+            <!-- ImageView -->
+            <ImageView
+                android:id="@+id/imgReport"
+                android:layout_width="84dp"
+                android:layout_height="84dp"
+                android:layout_marginStart="16dp"
+                android:layout_gravity="center_vertical"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical">
+
+                <!-- First TextView (Report Type) -->
+                <TextView
+                    android:id="@+id/text_report_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="sans-serif"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    tools:text="TextView" />
+
+                <!-- Second TextView (Location Name) -->
+                <TextView
+                    android:id="@+id/txt_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="sans-serif"
+                    android:textSize="18sp"
+                    tools:text="TextView" />
+
+                <!-- Third TextView (Created Date) -->
+                <TextView
+                    android:id="@+id/txt_createdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="sans-serif"
+                    android:textSize="18sp"
+                    tools:text="TextView" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </FrameLayout>

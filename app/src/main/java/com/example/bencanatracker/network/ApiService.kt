@@ -1,29 +1,24 @@
 package com.example.bencanatracker.network
 
-import ReportsResponse
-import com.example.bencanatracker.response.FloodGaugesResponse
+import com.example.bencanatracker.response.FloodResponse
+import com.example.bencanatracker.response.ReportsResponse
 import retrofit2.http.GET
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("reports?timeperiod=604800")
-        suspend fun getReports(): ReportsResponse
+    @GET("reports")
+    suspend fun getReports(
+        @Query("admin") provinceCode: String? = null,
+        @Query("disaster") disasterType: String? = null,
+        @Query("timeperiod") timePeriod: Long? = null
+    ): ReportsResponse
 
-    @GET("floodgauges?admin=ID-JK")
-    suspend fun getFloodGauges(): List<FloodGaugesResponse>
 
-    companion object {
-        private const val BASE_URL = "https://data.petabencana.id/"
 
-        fun create(): ApiService {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-            return retrofit.create(ApiService::class.java)
-        }
-    }
+    @GET("floods")
+    suspend fun getFloodData(
+        @Query("admin") admin: String,
+        @Query("minimum_state") minimumState: Int
+    ): FloodResponse
 }

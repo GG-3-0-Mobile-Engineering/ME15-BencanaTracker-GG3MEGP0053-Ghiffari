@@ -12,11 +12,6 @@
         android:title="@string/title_reports" />
 
     <item
-        android:id="@+id/navigation_flood"
-        android:icon="@drawable/ic_flood"
-        android:title="@string/title_flood" />
-
-    <item
         android:id="@+id/navigation_Setting"
         android:icon="@drawable/ic_setting"
         android:title="@string/title_setting" />

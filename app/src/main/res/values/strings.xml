@@ -4,12 +4,21 @@
     <string name="title_reports">Reports</string>
     <string name="title_flood">Flood</string>
     <string name="title_setting">Setting</string>
+    <string name="title_notif">Alert, WASPADA!!</string>
     <string name="google_map_api_key">AIzaSyAjm62thTtibGY8yU8Kum7NZ3x8UItMzxs</string>
+    <string name="select_report_type_prompt">Select Report Type</string>
+    <string-array name="report_types">
+        <item> </item>
+        <item>Flood</item>
+        <item>Earthquake</item>
+        <item>Haze</item>
+        <item>Wind</item>
+        <item>Volcano</item>
+    </string-array>
     <!-- Light Theme -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
 
     <!-- Dark Theme -->
     <style name="AppTheme.Dark" parent="Theme.AppCompat.DayNight.NoActionBar"/>
     <string name="dark_mode">Dark Mode</string>
-
 </resources>

@@ -1,29 +1,20 @@
 package com.example.bencanatracker
 
 import android.os.Bundle
-import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.android.volley.RequestQueue
 import com.example.bencanatracker.databinding.ActivityMainBinding
 import com.example.bencanatracker.ui.map.MapFragment
-import com.google.android.gms.common.api.Status
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.example.bencanatracker.ui.reports.ReportsFragment
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(), MapFragment.OnResetClickListener {
 
     private lateinit var binding: ActivityMainBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +29,7 @@ class MainActivity : AppCompatActivity(){
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_map, R.id.navigation_reports, R.id.navigation_flood, R.id.navigation_Setting
+                R.id.navigation_map, R.id.navigation_reports, R.id.navigation_Setting
             )
         )
 
@@ -50,4 +41,9 @@ class MainActivity : AppCompatActivity(){
         navView.setupWithNavController(navController)
     }
 
+    override fun onResetButtonClick() {
+        val reportsFragment =
+            supportFragmentManager.findFragmentByTag("fragment_reports") as? ReportsFragment
+        reportsFragment?.resetRecyclerView()
+    }
 }

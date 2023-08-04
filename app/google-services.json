@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "232384091410",
+    "project_id": "fcmpushnotif-828f3",
+    "storage_bucket": "fcmpushnotif-828f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:232384091410:android:c114e46f6c027f48b98fcb",
+        "android_client_info": {
+          "package_name": "com.example.bencanatracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "232384091410-qrj5mp3is0461mf4fo8oag7iafov3gqp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bencanatracker",
+            "certificate_hash": "0a2a22081c18eef3f3adfccc99aef440f4c43e4f"
+          }
+        },
+        {
+          "client_id": "232384091410-pl2lqnf57jkvp0glllrjee8do9dptmkn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhFfuYq0mTgb0AKo8DZyFoJm-AfUr47cM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "232384091410-pl2lqnf57jkvp0glllrjee8do9dptmkn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

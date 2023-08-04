@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <!-- Report Type Filter (Dropdown) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Report Type:"
+        android:layout_margin="16dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerReportType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/report_types"
+        android:prompt="@string/select_report_type_prompt" />
+
+
+    <!-- Apply and Cancel Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/btnApplyFilters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Apply" />
+
+        <Button
+            android:id="@+id/btnCancelFilters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:layout_marginStart="16dp" />
+
+
+
+</LinearLayout>
+</LinearLayout>
