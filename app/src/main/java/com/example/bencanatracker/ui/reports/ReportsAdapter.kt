@@ -39,7 +39,7 @@ class ReportsAdapter(private var reportsList: List<Geometry>, private val areaLi
         private val imageView: ImageView = itemView.findViewById(R.id.imgReport)
 
         fun bind(geometry: Geometry) {
-            textReportType.text = geometry.properties.reportData.reportType ?: "Unknown Report Type"
+            textReportType.text = geometry.properties.disasterType ?: "Unknown Report Type"
             txtdate.text = geometry.properties.createdAt ?: "Unknown date"
 
             val provinceName = geometry.properties.tags.instanceRegionCode?.let {

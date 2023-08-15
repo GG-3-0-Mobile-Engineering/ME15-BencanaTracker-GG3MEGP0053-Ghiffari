@@ -14,6 +14,7 @@ import com.example.bencanatracker.databinding.FragmentReportsBinding
 import com.example.bencanatracker.response.Geometry
 import com.example.bencanatracker.ui.map.SharedViewModel
 
+
 class ReportsFragment : Fragment() {
 
     private var _binding: FragmentReportsBinding? = null
@@ -23,6 +24,8 @@ class ReportsFragment : Fragment() {
     private lateinit var reportsViewModel: ReportsViewModel
     private lateinit var sharedViewModel: SharedViewModel
     private val areaList = AreaList()
+    private lateinit var loadingLayout: View
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +38,7 @@ class ReportsFragment : Fragment() {
         reportsViewModel = ViewModelProvider(this).get(ReportsViewModel::class.java)
         sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         setupRecyclerView()
-
+        loadingLayout = root.findViewById(R.id.loadingLayout2)
 
         return root
     }
@@ -43,11 +46,18 @@ class ReportsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        loadingLayout.visibility = View.VISIBLE
+
         reportsViewModel.reportsLiveData.observe(viewLifecycleOwner) { reportsResponse ->
             // Store all data and update RecyclerView with initial data
             val reportsList = reportsResponse.result.objects.output.geometries
             allReportsData = reportsList
-            filterRecyclerViewData(sharedViewModel.searchQuery.value, sharedViewModel.selectedProvince.value)
+            filterRecyclerViewData(
+                sharedViewModel.searchQuery.value,
+                sharedViewModel.selectedProvince.value,
+                sharedViewModel.selectedDisasterType.value
+            )
+            loadingLayout.visibility = View.GONE
         }
 
         // Fetch reports data only if it hasn't been fetched already
@@ -56,12 +66,15 @@ class ReportsFragment : Fragment() {
         }
 
         sharedViewModel.searchQuery.observe(viewLifecycleOwner) { searchQuery ->
-            // Perform filtering logic based on searchQuery and selected province, then update the RecyclerView
+            // Perform filtering logic based on searchQuery, selected province, and selected disaster type, then update the RecyclerView
             onSearchQueryChanged(searchQuery)
         }
 
-        // Observe the selected province in SharedViewModel and update the RecyclerView accordingly
         sharedViewModel.selectedProvince.observe(viewLifecycleOwner) { selectedProvince ->
+            onSearchQueryChanged(sharedViewModel.searchQuery.value)
+        }
+
+        sharedViewModel.selectedDisasterType.observe(viewLifecycleOwner) { selectedDisasterType ->
             onSearchQueryChanged(sharedViewModel.searchQuery.value)
         }
     }
@@ -77,35 +90,41 @@ class ReportsFragment : Fragment() {
     private var allReportsData: List<Geometry> = emptyList()
     private var filteredReportsData: List<Geometry> = emptyList()
 
-    fun filterRecyclerViewData(searchQuery: String?, selectedProvince: String?) {
-        filteredReportsData = if (searchQuery.isNullOrBlank() && selectedProvince.isNullOrBlank()) {
-            allReportsData // No search query and no selected province, show all data
-        } else {
-            // Filter data based on searchQuery and/or selected province
-            allReportsData.filter { geometry ->
-                val instanceRegionCode = geometry.properties.tags.instanceRegionCode.orEmpty()
-                val provinceName = areaList.ProvinceCode[instanceRegionCode].orEmpty()
-                instanceRegionCode.contains(searchQuery.orEmpty(), ignoreCase = true) ||
-                        provinceName.equals(selectedProvince.orEmpty(), ignoreCase = true)
+        private fun filterRecyclerViewData(searchQuery: String?, selectedProvince: String?, selectedDisasterType: String?) {
+            filteredReportsData = if (searchQuery.isNullOrBlank() && selectedProvince.isNullOrBlank() && selectedDisasterType.isNullOrBlank()) {
+                allReportsData // No search query, no selected province, and no selected disaster type, show all data
+            } else {
+                // Filter data based on searchQuery, selected province, and selected disaster type
+                allReportsData.filter { geometry ->
+                    val instanceRegionCode = geometry.properties.tags.instanceRegionCode.orEmpty()
+                    val provinceName = areaList.ProvinceCode[instanceRegionCode].orEmpty()
+                    val disasterType = geometry.properties.disasterType.orEmpty()
+
+
+                    instanceRegionCode.contains(searchQuery.orEmpty(), ignoreCase = true) ||
+                            provinceName.equals(selectedProvince.orEmpty(), ignoreCase = true) ||
+                            disasterType.equals(selectedDisasterType.orEmpty(), ignoreCase = true)
+                }
+            }
+
+            reportsAdapter.updateData(filteredReportsData)
+
+            if (filteredReportsData.isEmpty()) {
+                binding.textViewNoData.visibility = View.VISIBLE
+                binding.recyclerViewReports.visibility = View.GONE
+            } else {
+                binding.textViewNoData.visibility = View.GONE
+                binding.recyclerViewReports.visibility = View.VISIBLE
             }
         }
 
-        reportsAdapter.updateData(filteredReportsData)
-
-        if (filteredReportsData.isEmpty()) {
-            binding.textViewNoData.visibility = View.VISIBLE
-            binding.recyclerViewReports.visibility = View.GONE
-        } else {
-            binding.textViewNoData.visibility = View.GONE
-            binding.recyclerViewReports.visibility = View.VISIBLE
-        }
-    }
-
     private fun onSearchQueryChanged(searchQuery: String?) {
-        filterRecyclerViewData(searchQuery, sharedViewModel.selectedProvince.value)
+        filterRecyclerViewData(
+            searchQuery,
+            sharedViewModel.selectedProvince.value,
+            sharedViewModel.selectedDisasterType.value
+        )
     }
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()

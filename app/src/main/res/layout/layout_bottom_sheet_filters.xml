@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <!-- Report Type Filter (Dropdown) -->
@@ -14,35 +12,38 @@
         android:layout_margin="16dp"/>
 
     <Spinner
-        android:id="@+id/spinnerReportType"
+        android:id="@+id/spinnerDisasterType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/report_types"
-        android:prompt="@string/select_report_type_prompt" />
+        android:entries="@array/disaster_types"
+        android:prompt="@string/select_disaster_type_prompt"
+        android:paddingBottom="10dp"/>
 
-
-    <!-- Apply and Cancel Buttons -->
+    <!-- Button Layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end"
-        android:padding="16dp">
+        android:layout_marginTop="16dp"
+        android:gravity="center">
 
+        <!-- Apply Filter Button -->
         <Button
-            android:id="@+id/btnApplyFilters"
+            android:id="@+id/buttonApplyFilter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apply" />
+            android:text="Apply Filter"
+            android:layout_gravity="center"
+            android:onClick="onApplyFilterClick"/>
 
+        <!-- Cancel Button -->
         <Button
-            android:id="@+id/btnCancelFilters"
+            android:id="@+id/buttonCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"
-            android:layout_marginStart="16dp" />
-
-
-
-</LinearLayout>
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:onClick="onCancelClick"/>
+    </LinearLayout>
 </LinearLayout>

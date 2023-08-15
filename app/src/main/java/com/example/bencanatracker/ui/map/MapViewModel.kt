@@ -15,28 +15,39 @@ class MapViewModel : ViewModel() {
     val reportsList: LiveData<List<Geometry>> get() = _reportsList
 
     private var allReports: List<Geometry>? = null
+    private var selectedDisasterType: String? = null
+    private var selectedProvince: String? = null
 
-    fun fetchReportsAndAddMarkers(selectedProvince: String? = null, selectedDisasterType: String? = null) {
+    fun fetchReportsAndAddMarkers(
+        selectedProvince: String? = null,
+        selectedDisasterType: String? = null,
+        applyFilter: Boolean = false
+    ) {
+        this.selectedDisasterType = selectedDisasterType
+        this.selectedProvince = selectedProvince
+
         viewModelScope.launch {
             try {
                 val apiService = ApiClient.apiService
 
-                // Call the API using the filter parameters (selectedDisasterType) if provided
                 val reportsResponse = if (!selectedDisasterType.isNullOrEmpty()) {
                     apiService.getReports(disasterType = selectedDisasterType)
                 } else {
                     apiService.getReports()
                 }
 
-                // Update allReports with the retrieved reports data
                 allReports = reportsResponse.result.objects.output.geometries
 
-                // If selectedProvince is provided, filter the reports based on it
-                val filteredReports = if (!selectedProvince.isNullOrEmpty()) {
+                val filteredReports = if (applyFilter) {
                     allReports?.filter { geometry ->
                         val instanceRegionCode = geometry.properties.tags.instanceRegionCode ?: ""
                         val provinceName = AreaList().ProvinceCode[instanceRegionCode] ?: ""
-                        provinceName.equals(selectedProvince, ignoreCase = true)
+                        val reportType = geometry.properties.disasterType ?: ""
+
+                        val provinceFilterMatch = selectedProvince.isNullOrEmpty() || provinceName.equals(selectedProvince, ignoreCase = true)
+                        val disasterTypeFilterMatch = selectedDisasterType.isNullOrEmpty() || reportType.equals(selectedDisasterType, ignoreCase = true)
+
+                        provinceFilterMatch && disasterTypeFilterMatch
                     }
                 } else {
                     allReports
@@ -49,4 +60,6 @@ class MapViewModel : ViewModel() {
             }
         }
     }
+
+    // ... Other methods ...
 }

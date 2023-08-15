@@ -18,7 +18,7 @@ data class Results(
     val objects: Objectss,
 
     @SerializedName("arcs")
-    val arcs: List<List<List<Double>>>,
+    val arcs: List<List<List<Int>>>,
 
     @SerializedName("transform")
     val transform: Transform,

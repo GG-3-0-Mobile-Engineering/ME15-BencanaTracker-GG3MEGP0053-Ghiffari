@@ -6,15 +6,17 @@
     <string name="title_setting">Setting</string>
     <string name="title_notif">Alert, WASPADA!!</string>
     <string name="google_map_api_key">AIzaSyAjm62thTtibGY8yU8Kum7NZ3x8UItMzxs</string>
-    <string name="select_report_type_prompt">Select Report Type</string>
-    <string-array name="report_types">
-        <item> </item>
-        <item>Flood</item>
-        <item>Earthquake</item>
-        <item>Haze</item>
-        <item>Wind</item>
-        <item>Volcano</item>
+    <string-array name="disaster_types">
+        <item>Select a Disaster Type</item>
+        <item>flood</item>
+        <item>earthquake</item>
+        <item>haze</item>
+        <item>wind</item>
+        <item>fire</item>
+        <item>volcano</item>
     </string-array>
+
+    <string name="select_disaster_type_prompt">Select Disaster Type</string>
     <!-- Light Theme -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
 

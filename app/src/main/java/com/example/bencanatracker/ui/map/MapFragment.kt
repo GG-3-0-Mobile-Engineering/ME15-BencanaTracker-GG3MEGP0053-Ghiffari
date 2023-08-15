@@ -34,16 +34,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val DEFAULT_LONGITUDE = 118.0149
     private var filterDialog: BottomSheetDialog? = null
 
+    val binding get() = _binding!!
+    private lateinit var loadingLayout: View
 
-
-
-    private val binding get() = _binding!!
 
     private val sharedViewModel: SharedViewModel by lazy {
         ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
     }
 
-    // Get an instance of MapViewModel
     private val mapViewModel: MapViewModel by lazy {
         ViewModelProvider(this).get(MapViewModel::class.java)
     }
@@ -56,7 +54,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private var resetClickListener: OnResetClickListener? = null
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,28 +65,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             childFragmentManager.findFragmentById(R.id.mapfragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        loadingLayout = root.findViewById(R.id.loadingLayout1)
+
+
+        // Initialize the filter dialog if not already initialized
+        if (filterDialog == null) {
+            initFilterDialog()
+        }
+
         // Set click listener on the filter button
         binding.filterButton.setOnClickListener { view ->
             showFilterDialog()
         }
 
-        filterDialog = BottomSheetDialog(requireContext())
-        val view = layoutInflater.inflate(R.layout.layout_bottom_sheet_filters, null)
-        filterDialog?.setContentView(view)
-        val spinnerReportType: Spinner = view.findViewById(R.id.spinnerReportType)
-        spinnerReportType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val reportType = spinnerReportType.selectedItem.toString()
-                if (reportType.isNotBlank()) {
-                    mapViewModel.fetchReportsAndAddMarkers(reportType)
-                    filterDialog?.dismiss()
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Handle the case when nothing is selected (optional)
-            }
-
-        }
         // Set click listener on the Reset button
         binding.resetButton.setOnClickListener {
             resetMap()
@@ -107,8 +95,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         return root
     }
 
+
     override fun onMapReady(googleMap: GoogleMap) {
         mGoogleMap = googleMap
+
+        loadingLayout.visibility = View.VISIBLE
 
         // Check if the map is not null before calling fetchReportsAndAddMarkers
         mGoogleMap?.let {
@@ -120,16 +111,55 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun initFilterDialog() {
+        filterDialog = BottomSheetDialog(requireContext())
+        val view = layoutInflater.inflate(R.layout.layout_bottom_sheet_filters, null)
+        filterDialog?.setContentView(view)
+
+        val spinnerDisasterType: Spinner = view.findViewById(R.id.spinnerDisasterType)
+        val btnApplyFilter = view.findViewById<Button>(R.id.buttonApplyFilter)
+        val btnCancel = view.findViewById<Button>(R.id.buttonCancel) // Get reference to the Cancel button
+
+        spinnerDisasterType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                btnApplyFilter.setOnClickListener {
+                    applyFilter()
+                    filterDialog?.dismiss()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Handle the case when nothing is selected (optional)
+            }
+        }
+
+        // Set the OnClickListener for the Cancel button
+        btnCancel.setOnClickListener {
+            filterDialog?.dismiss()
+        }
+    }
+
+    private fun applyFilter() {
+        val disasterType = filterDialog?.findViewById<Spinner>(R.id.spinnerDisasterType)?.selectedItem.toString()
+        if (disasterType.isNotBlank()) {
+            val selectedProvince = sharedViewModel.selectedProvince.value
+            mapViewModel.fetchReportsAndAddMarkers(
+                selectedDisasterType = disasterType,
+                selectedProvince = selectedProvince,
+                applyFilter = true
+            )
+        }
+    }
 
 
-    // Inside setupAutocompleteSearch() function in MapFragment
+
     private fun setupAutocompleteSearch() {
         val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_dropdown_item_1line,
-            areaList.ProvinceCode.values.toMutableList() // Use the province names for suggestions
+            areaList.ProvinceCode.values.toMutableList()
         )
-        binding.searchBar.threshold = 1 // Show suggestions after 1 character is typed
+        binding.searchBar.threshold = 1
         binding.searchBar.setAdapter(adapter)
         binding.searchBar.setOnItemClickListener { _, _, position, _ ->
             val selectedProvinceName = adapter.getItem(position)
@@ -140,7 +170,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 sharedViewModel.setSearchQuery(nonNullProvinceName)
                 sharedViewModel.setSelectedProvince(nonNullProvinceName)
 
-                // Zoom to the searched location
                 zoomToLocation(latLng)
             } else {
                 // Handle the case when the province name doesn't have a corresponding latitude and longitude
@@ -150,32 +179,38 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun zoomToLocation(location: LatLng) {
-        val zoomLevel = 12.0f // Adjust the zoom level as needed
+        val zoomLevel = 7.0f // Adjust the zoom level as needed
 
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(location, zoomLevel)
         mGoogleMap?.moveCamera(cameraUpdate)
     }
 
-    // Function to add markers to the map
     private fun addMarkersFromApi(reportsList: List<Geometry>) {
+        // Clear the previous markers
         mGoogleMap?.clear()
 
         val markerList = mutableListOf<Marker>()
+
+        val selectedProvince = sharedViewModel.selectedProvince.value
 
         for (geometry in reportsList) {
             val lat = geometry.coordinates[1] // Latitude is at index 1
             val lng = geometry.coordinates[0] // Longitude is at index 0
             val instanceRegionCode = geometry.properties.tags.instanceRegionCode ?: "Unknown Region"
             val provinceName = areaList.ProvinceCode[instanceRegionCode] ?: "Unknown Province"
-            val reportType = geometry.properties.reportData.reportType ?: "Unknown Report Type"
+            val reportType = geometry.properties.disasterType ?: "Unknown Report Type"
 
             val title = "$provinceName - $reportType" // Concatenate province name and report type
 
-            val latLng = LatLng(lat, lng)
-            val markerOptions = MarkerOptions().position(latLng).title(title)
-            val marker = mGoogleMap?.addMarker(markerOptions)
-            marker?.let { markerList.add(it) }
+            if (selectedProvince.isNullOrBlank() || provinceName.equals(selectedProvince, ignoreCase = true)) {
+                val latLng = LatLng(lat, lng)
+                val markerOptions = MarkerOptions().position(latLng).title(title)
+                val marker = mGoogleMap?.addMarker(markerOptions)
+                marker?.let { markerList.add(it) }
+            }
         }
+
+        loadingLayout.visibility = View.GONE
 
         // If there are markers, include the searched location marker (if any) in the bounds
         if (markerList.isNotEmpty() || searchedLocationLatLng != null) {
@@ -193,55 +228,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mGoogleMap?.moveCamera(cameraUpdate)
         } else {
             // If there are no markers and no searched location, show a default location (e.g., a city center) with zoom level 7.0.
-            val defaultLocation = LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(defaultLocation, 4.0f)
-            mGoogleMap?.moveCamera(cameraUpdate)
         }
     }
+
 
 
     private fun showFilterDialog() {
-        if (filterDialog == null) {
-            filterDialog = BottomSheetDialog(requireContext())
-            val view = layoutInflater.inflate(R.layout.layout_bottom_sheet_filters, null)
-            filterDialog?.setContentView(view)
-
-            // Initialize the views inside the filter dialog
-            val spinnerReportType: Spinner = view.findViewById(R.id.spinnerReportType)
-            val btnApplyFilters: Button = view.findViewById(R.id.btnApplyFilters)
-            val btnCancelFilters: Button = view.findViewById(R.id.btnCancelFilters)
-
-            // Initialize the spinner with the report types
-            val reportTypes = resources.getStringArray(R.array.report_types)
-            val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, reportTypes)
-            spinnerReportType.adapter = spinnerAdapter
-
-            // Set click listener for the Apply button
-            btnApplyFilters.setOnClickListener {
-                val reportType = spinnerReportType.selectedItem.toString()
-
-                // Call the API with the selected filter if the report type is not null
-                if (reportType.isNotBlank()) {
-                    mapViewModel.fetchReportsAndAddMarkers(reportType)
-                    filterDialog?.dismiss()
-                } else {
-                    // Handle the case when the report type is not selected
-                    // You may want to display an error message or handle this situation differently
-                }
-            }
-
-            // Set click listener for the Cancel button
-            btnCancelFilters.setOnClickListener {
-                filterDialog?.dismiss()
-            }
-        }
-
         filterDialog?.show()
     }
-
-
-
-
 
     private fun resetMap() {
         searchedLocationLatLng = null

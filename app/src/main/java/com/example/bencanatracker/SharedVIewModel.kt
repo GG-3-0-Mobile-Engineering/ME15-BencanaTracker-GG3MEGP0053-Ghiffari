@@ -13,6 +13,9 @@ class SharedViewModel : ViewModel() {
     private val _selectedProvince = MutableLiveData<String>()
     val selectedProvince: LiveData<String> get() = _selectedProvince
 
+    // MutableLiveData to store the selected disaster type
+    private val _selectedDisasterType = MutableLiveData<String>()
+    val selectedDisasterType: LiveData<String> get() = _selectedDisasterType
 
     // Function to set the search query
     fun setSearchQuery(query: String) {
@@ -24,4 +27,8 @@ class SharedViewModel : ViewModel() {
         _selectedProvince.value = province
     }
 
+    // Function to set the selected disaster type
+    fun setSelectedDisasterType(disasterType: String) {
+        _selectedDisasterType.value = disasterType
+    }
 }

@@ -42,6 +42,16 @@ class AreaList {
         return ProvinceLatLong[provinceName]
     }
 
+    fun getProvinceCodeByLatLng(latitude: Double, longitude: Double): String? {
+        val targetLatLng = LatLng(latitude, longitude)
+        for ((code, latLng) in ProvinceLatLong) {
+            if (latLng == targetLatLng) {
+                return code
+            }
+        }
+        return null
+    }
+
 
     val ProvinceLatLong = mapOf(
         "Aceh" to LatLng(4.6951, 96.7494),

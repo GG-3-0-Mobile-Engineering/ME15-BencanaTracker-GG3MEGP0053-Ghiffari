@@ -8,11 +8,13 @@
     tools:context=".ui.reports.ReportsFragment"
     android:id="@+id/fragmentreports">
 
-    <include layout="@layout/layout_loading"
-        android:id="@+id/loadingLayout"
+    <include
+        android:id="@+id/loadingLayout2"
+        layout="@layout/layout_loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
+
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -36,5 +38,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

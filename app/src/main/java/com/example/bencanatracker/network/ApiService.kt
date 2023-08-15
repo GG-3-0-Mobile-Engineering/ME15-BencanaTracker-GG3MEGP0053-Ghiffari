@@ -9,9 +9,9 @@ interface ApiService {
 
     @GET("reports")
     suspend fun getReports(
-        @Query("admin") provinceCode: String? = null,
+        @Query("admin") admin: String? = null,
         @Query("disaster") disasterType: String? = null,
-        @Query("timeperiod") timePeriod: Long? = null
+        @Query("timeperiod") timePeriod: Long = 604800
     ): ReportsResponse
 
 
